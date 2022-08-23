@@ -4,7 +4,7 @@ async function handleRequest(request: Request): Promise<Response> {
   const { pathname } = new URL(request.url);
 
   if (pathname.startsWith("/image.png")) {
-    const file = await Deno.readFile("./assets/image.png");
+    const file = await Deno.readFile("assets/image.png");
     return new Response(file, {
       headers: {
         "content-type": "image/png",
