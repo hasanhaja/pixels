@@ -4,9 +4,7 @@ async function handleRequest(request: Request): Promise<Response> {
   const { pathname } = new URL(request.url);
 
   if (pathname.startsWith("/image.png")) {
-    // Read the style.css file from the file system.
     const file = await Deno.readFile("./assets/image.png");
-    // Respond to the request with the style.css file.
     return new Response(file, {
       headers: {
         "content-type": "image/png",
@@ -14,7 +12,7 @@ async function handleRequest(request: Request): Promise<Response> {
     });
   }
 
-  return new Response(JSON.stringify({ name: "Hasan"}), {
+  return new Response(JSON.stringify({ name: "Welcome to Pixels"}), {
     headers: {
       "content-type": "application/json",
     },
