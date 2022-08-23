@@ -1,23 +1,25 @@
-import { serve } from "https://deno.land/std@0.140.0/http/server.ts";
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 
-async function handleRequest(request: Request): Promise<Response> {
-  const { pathname } = new URL(request.url);
+const router = new Router();
+router.get("/", (ctx) => {
+  ctx.response.body = {message: "Welcome to Pixels"};
+});
 
-  if (pathname.startsWith("/image.png")) {
-    const file = await Deno.readFile("assets/image.png");
-    console.log(Deno.cwd());
-    return new Response(file, {
-      headers: {
-        "content-type": "image/png",
-      },
-    });
+router.get("/:imageName", async (ctx) => {
+  if (ctx.params.imageName === "image.png") {
+    try {
+      const file = await Deno.readFile("./assets/image.png");
+      ctx.response.body = file;
+    } catch (_err) {
+      ctx.response.body = { message: `Could not read file: ${ctx.params.imageName}`};
+    }
+  } else {
+    ctx.response.body = { message: `${ctx.params.imageName} not found`};
   }
+});
 
-  return new Response(JSON.stringify({ name: "Welcome to Pixels"}), {
-    headers: {
-      "content-type": "application/json",
-    },
-  });
-}
+const app = new Application();
+app.use(router.routes());
+app.use(router.allowedMethods());
 
-serve(handleRequest);
+await app.listen({ port: 8000 });
