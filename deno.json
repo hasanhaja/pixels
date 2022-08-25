@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "start": "deno run --allow-read --allow-net --watch pixels-api/mod.ts",
+    "wasmbuild": "deno run -A https://deno.land/x/wasmbuild@0.8.5/main.ts",
+    "build-engine": "deno task --cwd pixels-engine wasmbuild"
+  }
+}
