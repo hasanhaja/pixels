@@ -8,7 +8,7 @@ router.get("/", (ctx) => {
 router.get("/:imageName", async (ctx) => {
   if (ctx.params.imageName === "image.png") {
     try {
-      const file = await Deno.readFile("./assets/image.png");
+      const file = await Deno.readFile("./pixels-api/assets/image.png");
       ctx.response.body = file;
     } catch (_err) {
       ctx.response.body = { message: `Could not read file: ${ctx.params.imageName}`};
