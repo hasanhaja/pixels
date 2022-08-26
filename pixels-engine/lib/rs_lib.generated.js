@@ -1,7 +1,7 @@
 // @generated file from wasmbuild -- do not edit
 // deno-lint-ignore-file
 // deno-fmt-ignore-file
-// source-hash: 92e58db85c660814e9918870babe378f8d73551d
+// source-hash: 69bdbe0e13cc8e5284838e3a4a92eaff3a27250d
 let wasm;
 
 /**
@@ -108,6 +108,29 @@ export function greet(message) {
   }
 }
 
+/**
+ * @param {string} message
+ * @returns {string}
+ */
+export function holler(message) {
+  try {
+    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+    const ptr0 = passStringToWasm0(
+      message,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    wasm.holler(retptr, ptr0, len0);
+    var r0 = getInt32Memory0()[retptr / 4 + 0];
+    var r1 = getInt32Memory0()[retptr / 4 + 1];
+    return getStringFromWasm0(r0, r1);
+  } finally {
+    wasm.__wbindgen_add_to_stack_pointer(16);
+    wasm.__wbindgen_free(r0, r1);
+  }
+}
+
 const imports = {
   __wbindgen_placeholder__: {},
 };
@@ -140,7 +163,7 @@ let lastLoadPromise;
  * @param {decompressCallback=} transform
  * @returns {Promise<{
  *   instance: WebAssembly.Instance;
- *   exports: { add: typeof add; greet: typeof greet }
+ *   exports: { add: typeof add; greet: typeof greet; holler: typeof holler }
  * }>}
  */
 export function instantiateWithInstance(transform) {
@@ -168,7 +191,7 @@ export function instantiateWithInstance(transform) {
 }
 
 function getWasmInstanceExports() {
-  return { add, greet };
+  return { add, greet, holler };
 }
 
 /** Gets if the Wasm module has been instantiated. */

@@ -10,6 +10,11 @@ pub fn greet(message: &str) -> String {
   format!("Welcome to {}!", message)
 }
 
+#[wasm_bindgen]
+pub fn holler(message: &str) -> String {
+  greet(message).to_uppercase()
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
