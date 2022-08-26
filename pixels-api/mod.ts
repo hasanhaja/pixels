@@ -2,9 +2,9 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 
 import { instantiate } from "../pixels-engine/lib/rs_lib.generated.js";
 
-const { add, greet, holler } = await instantiate();
+const { add, greet, holler, grayscale } = await instantiate();
 
-console.log(add(1, 2));
+const IMAGE = "flowers.jpg";
 
 const router = new Router();
 router.get("/", (ctx) => {
@@ -16,10 +16,13 @@ router.get("/holler", (ctx) => {
 });
 
 router.get("/:imageName", async (ctx) => {
-  if (ctx.params.imageName === "image.png") {
+  if (ctx.params.imageName === IMAGE) {
     try {
-      const file = await Deno.readFile("./pixels-api/assets/image.png");
-      ctx.response.body = file;
+      const file = await Deno.readFile(`./pixels-api/assets/${IMAGE}`);
+      const grayImage = grayscale(file);
+      console.log(file);
+      console.log(grayImage);
+      ctx.response.body = grayImage;
     } catch (_err) {
       ctx.response.body = { message: `Could not read file: ${ctx.params.imageName}`};
     }

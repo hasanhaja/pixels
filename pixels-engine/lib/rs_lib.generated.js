@@ -1,9 +1,27 @@
 // @generated file from wasmbuild -- do not edit
 // deno-lint-ignore-file
 // deno-fmt-ignore-file
-// source-hash: 69bdbe0e13cc8e5284838e3a4a92eaff3a27250d
+// source-hash: fa42358dc8703bd94f9e177c9a8cfb7a3d30afbe
 let wasm;
 
+const cachedTextDecoder = new TextDecoder("utf-8", {
+  ignoreBOM: true,
+  fatal: true,
+});
+
+cachedTextDecoder.decode();
+
+let cachedUint8Memory0;
+function getUint8Memory0() {
+  if (cachedUint8Memory0.byteLength === 0) {
+    cachedUint8Memory0 = new Uint8Array(wasm.memory.buffer);
+  }
+  return cachedUint8Memory0;
+}
+
+function getStringFromWasm0(ptr, len) {
+  return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
+}
 /**
  * @param {number} a
  * @param {number} b
@@ -15,14 +33,6 @@ export function add(a, b) {
 }
 
 let WASM_VECTOR_LEN = 0;
-
-let cachedUint8Memory0;
-function getUint8Memory0() {
-  if (cachedUint8Memory0.byteLength === 0) {
-    cachedUint8Memory0 = new Uint8Array(wasm.memory.buffer);
-  }
-  return cachedUint8Memory0;
-}
 
 const cachedTextEncoder = new TextEncoder("utf-8");
 
@@ -74,17 +84,6 @@ function getInt32Memory0() {
   }
   return cachedInt32Memory0;
 }
-
-const cachedTextDecoder = new TextDecoder("utf-8", {
-  ignoreBOM: true,
-  fatal: true,
-});
-
-cachedTextDecoder.decode();
-
-function getStringFromWasm0(ptr, len) {
-  return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
-}
 /**
  * @param {string} message
  * @returns {string}
@@ -131,8 +130,42 @@ export function holler(message) {
   }
 }
 
+function passArray8ToWasm0(arg, malloc) {
+  const ptr = malloc(arg.length * 1);
+  getUint8Memory0().set(arg, ptr / 1);
+  WASM_VECTOR_LEN = arg.length;
+  return ptr;
+}
+
+function getArrayU8FromWasm0(ptr, len) {
+  return getUint8Memory0().subarray(ptr / 1, ptr / 1 + len);
+}
+/**
+ * @param {Uint8Array} image_buffer
+ * @returns {Uint8Array}
+ */
+export function grayscale(image_buffer) {
+  try {
+    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+    const ptr0 = passArray8ToWasm0(image_buffer, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.grayscale(retptr, ptr0, len0);
+    var r0 = getInt32Memory0()[retptr / 4 + 0];
+    var r1 = getInt32Memory0()[retptr / 4 + 1];
+    var v1 = getArrayU8FromWasm0(r0, r1).slice();
+    wasm.__wbindgen_free(r0, r1 * 1);
+    return v1;
+  } finally {
+    wasm.__wbindgen_add_to_stack_pointer(16);
+  }
+}
+
 const imports = {
-  __wbindgen_placeholder__: {},
+  __wbindgen_placeholder__: {
+    __wbindgen_throw: function (arg0, arg1) {
+      throw new Error(getStringFromWasm0(arg0, arg1));
+    },
+  },
 };
 
 const wasm_url = new URL("rs_lib_bg.wasm", import.meta.url);
@@ -163,7 +196,7 @@ let lastLoadPromise;
  * @param {decompressCallback=} transform
  * @returns {Promise<{
  *   instance: WebAssembly.Instance;
- *   exports: { add: typeof add; greet: typeof greet; holler: typeof holler }
+ *   exports: { add: typeof add; greet: typeof greet; holler: typeof holler; grayscale: typeof grayscale }
  * }>}
  */
 export function instantiateWithInstance(transform) {
@@ -191,7 +224,7 @@ export function instantiateWithInstance(transform) {
 }
 
 function getWasmInstanceExports() {
-  return { add, greet, holler };
+  return { add, greet, holler, grayscale };
 }
 
 /** Gets if the Wasm module has been instantiated. */
