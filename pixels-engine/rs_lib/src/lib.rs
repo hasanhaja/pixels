@@ -17,6 +17,7 @@ pub fn holler(message: &str) -> String {
   greet(message).to_uppercase()
 }
 
+// source: https://github.com/peerigon/wasm-image/blob/master/rust-image-wrapper/src/lib.rs
 #[wasm_bindgen]
 pub fn grayscale(image_buffer: Vec<u8>) -> Vec<u8> {
   let image = image::load_from_memory(&image_buffer).unwrap();
