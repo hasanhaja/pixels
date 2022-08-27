@@ -4,26 +4,29 @@ import { instantiate } from "../pixels-engine/lib/rs_lib.generated.js";
 
 const { grayscale } = await instantiate();
 
-const IMAGE = "flowers.jpg";
-
 const router = new Router();
 router.get("/", (ctx) => {
   ctx.response.body = { message: "Welcome to Pixels"};
 });
 
+const files = (dir: string): Array<string> => {
+  const contents = Deno.readDirSync(`./pixels-api/${dir}`);
+
+  return [...contents].filter(content => content.isFile).map(content => content.name);
+}
+
 router.get("/:imageName", async (ctx) => {
-  if (ctx.params.imageName === IMAGE) {
+  const imageName = ctx.params.imageName;
+  if (files("assets").includes(imageName)) {
     try {
-      const file = await Deno.readFile(`./pixels-api/assets/${IMAGE}`);
+      const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
       const grayImage = grayscale(file);
-      console.log(file);
-      console.log(grayImage);
       ctx.response.body = grayImage;
     } catch (_err) {
-      ctx.response.body = { message: `Could not read file: ${ctx.params.imageName}`};
+      ctx.response.body = { message: `Could not read file: ${imageName}`};
     }
   } else {
-    ctx.response.body = { message: `${ctx.params.imageName} not found`};
+    ctx.response.body = { message: `${imageName} not found`};
   }
 });
 
