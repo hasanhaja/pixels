@@ -1,7 +1,7 @@
 // @generated file from wasmbuild -- do not edit
 // deno-lint-ignore-file
 // deno-fmt-ignore-file
-// source-hash: 252a4770df8dbf6091bcc9b008769df0017d4c6b
+// source-hash: f42d153800d6482cbd3657bd4665c17e5de2737b
 let wasm;
 
 const cachedTextDecoder = new TextDecoder("utf-8", {

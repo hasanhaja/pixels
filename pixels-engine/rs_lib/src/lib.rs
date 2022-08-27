@@ -23,22 +23,23 @@ fn to_buffer(image: DynamicImage) -> Vec<u8> {
 
   buffer
 }
-
-#[wasm_bindgen]
-pub fn grayscale(image_buffer: Vec<u8>) -> Vec<u8> {
-  let image = to_image(image_buffer);
-  let image = image.grayscale();
+fn process<F>(buffer: Vec<u8>, f: F) -> Vec<u8> 
+where 
+F: Fn(DynamicImage) -> DynamicImage {
+  let image = to_image(buffer);
+  let image = f(image);
 
   to_buffer(image)
 }
 
 #[wasm_bindgen]
+pub fn grayscale(image_buffer: Vec<u8>) -> Vec<u8> {
+  process(image_buffer, |image| image.grayscale())
+}
+
+#[wasm_bindgen]
 pub fn blur(image_buffer: Vec<u8>, sigma: f32) -> Vec<u8> {
-  let image = to_image(image_buffer);
-
-  let image = image.blur(sigma);
-
-  to_buffer(image)
+  process(image_buffer, |image| image.blur(sigma))
 }
 
 #[cfg(test)]
