@@ -2,17 +2,13 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 
 import { instantiate } from "../pixels-engine/lib/rs_lib.generated.js";
 
-const { add, greet, holler, grayscale } = await instantiate();
+const { grayscale } = await instantiate();
 
 const IMAGE = "flowers.jpg";
 
 const router = new Router();
 router.get("/", (ctx) => {
-  ctx.response.body = { message: `${greet("Pixel")}`};
-});
-
-router.get("/holler", (ctx) => {
-  ctx.response.body = { message: `${holler("Pixel")}`};
+  ctx.response.body = { message: "Welcome to Pixels"};
 });
 
 router.get("/:imageName", async (ctx) => {

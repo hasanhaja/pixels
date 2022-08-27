@@ -1,7 +1,7 @@
 // @generated file from wasmbuild -- do not edit
 // deno-lint-ignore-file
 // deno-fmt-ignore-file
-// source-hash: 973d60ac2d6b8a8198ad8073e745910db9f3bc7b
+// source-hash: d129b0207a6d5eac1202b3ff3f9744f040f3ba56
 let wasm;
 
 const cachedTextDecoder = new TextDecoder("utf-8", {
@@ -22,58 +22,13 @@ function getUint8Memory0() {
 function getStringFromWasm0(ptr, len) {
   return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
-/**
- * @param {number} a
- * @param {number} b
- * @returns {number}
- */
-export function add(a, b) {
-  const ret = wasm.add(a, b);
-  return ret;
-}
 
 let WASM_VECTOR_LEN = 0;
 
-const cachedTextEncoder = new TextEncoder("utf-8");
-
-const encodeString = function (arg, view) {
-  return cachedTextEncoder.encodeInto(arg, view);
-};
-
-function passStringToWasm0(arg, malloc, realloc) {
-  if (realloc === undefined) {
-    const buf = cachedTextEncoder.encode(arg);
-    const ptr = malloc(buf.length);
-    getUint8Memory0().subarray(ptr, ptr + buf.length).set(buf);
-    WASM_VECTOR_LEN = buf.length;
-    return ptr;
-  }
-
-  let len = arg.length;
-  let ptr = malloc(len);
-
-  const mem = getUint8Memory0();
-
-  let offset = 0;
-
-  for (; offset < len; offset++) {
-    const code = arg.charCodeAt(offset);
-    if (code > 0x7F) break;
-    mem[ptr + offset] = code;
-  }
-
-  if (offset !== len) {
-    if (offset !== 0) {
-      arg = arg.slice(offset);
-    }
-    ptr = realloc(ptr, len, len = offset + arg.length * 3);
-    const view = getUint8Memory0().subarray(ptr + offset, ptr + len);
-    const ret = encodeString(arg, view);
-
-    offset += ret.written;
-  }
-
-  WASM_VECTOR_LEN = offset;
+function passArray8ToWasm0(arg, malloc) {
+  const ptr = malloc(arg.length * 1);
+  getUint8Memory0().set(arg, ptr / 1);
+  WASM_VECTOR_LEN = arg.length;
   return ptr;
 }
 
@@ -83,58 +38,6 @@ function getInt32Memory0() {
     cachedInt32Memory0 = new Int32Array(wasm.memory.buffer);
   }
   return cachedInt32Memory0;
-}
-/**
- * @param {string} message
- * @returns {string}
- */
-export function greet(message) {
-  try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    const ptr0 = passStringToWasm0(
-      message,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    wasm.greet(retptr, ptr0, len0);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    return getStringFromWasm0(r0, r1);
-  } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
-    wasm.__wbindgen_free(r0, r1);
-  }
-}
-
-/**
- * @param {string} message
- * @returns {string}
- */
-export function holler(message) {
-  try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    const ptr0 = passStringToWasm0(
-      message,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    wasm.holler(retptr, ptr0, len0);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    return getStringFromWasm0(r0, r1);
-  } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
-    wasm.__wbindgen_free(r0, r1);
-  }
-}
-
-function passArray8ToWasm0(arg, malloc) {
-  const ptr = malloc(arg.length * 1);
-  getUint8Memory0().set(arg, ptr / 1);
-  WASM_VECTOR_LEN = arg.length;
-  return ptr;
 }
 
 function getArrayU8FromWasm0(ptr, len) {
@@ -196,7 +99,7 @@ let lastLoadPromise;
  * @param {decompressCallback=} transform
  * @returns {Promise<{
  *   instance: WebAssembly.Instance;
- *   exports: { add: typeof add; greet: typeof greet; holler: typeof holler; grayscale: typeof grayscale }
+ *   exports: { grayscale: typeof grayscale }
  * }>}
  */
 export function instantiateWithInstance(transform) {
@@ -224,7 +127,7 @@ export function instantiateWithInstance(transform) {
 }
 
 function getWasmInstanceExports() {
-  return { add, greet, holler, grayscale };
+  return { grayscale };
 }
 
 /** Gets if the Wasm module has been instantiated. */

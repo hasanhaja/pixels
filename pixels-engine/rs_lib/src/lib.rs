@@ -1,39 +1,35 @@
+use image::{load_from_memory, DynamicImage};
 use std::io::{Cursor, Read, Seek, SeekFrom};
 
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
-pub fn add(a: i32, b: i32) -> i32 {
-  return a + b;
-}
-
-#[wasm_bindgen]
-pub fn greet(message: &str) -> String {
-  format!("Welcome to {}!", message)
-}
-
-#[wasm_bindgen]
-pub fn holler(message: &str) -> String {
-  greet(message).to_uppercase()
+fn to_image(buffer: Vec<u8>) -> DynamicImage {
+  load_from_memory(&buffer).unwrap()
 }
 
 // source: https://github.com/peerigon/wasm-image/blob/master/rust-image-wrapper/src/lib.rs
-#[wasm_bindgen]
-pub fn grayscale(image_buffer: Vec<u8>) -> Vec<u8> {
-  let image = image::load_from_memory(&image_buffer).unwrap();
-  let image = image.grayscale();
+fn to_buffer(image: DynamicImage) -> Vec<u8> {
+  let mut cursor = Cursor::new(Vec::new());
 
-  let mut c = Cursor::new(Vec::new());
-  
-  image.write_to(&mut c, image::ImageOutputFormat::Jpeg(100)).unwrap();
-  
-  c.seek(SeekFrom::Start(0)).unwrap();
+  image
+    .write_to(&mut cursor, image::ImageOutputFormat::Jpeg(80))
+    .unwrap();
+
+  cursor.seek(SeekFrom::Start(0)).unwrap();
 
   // Read the "file's" contents into a vector
-  let mut out = Vec::new();
-  c.read_to_end(&mut out).unwrap();
+  let mut buffer = Vec::new();
+  cursor.read_to_end(&mut buffer).unwrap();
 
-  out
+  buffer
+}
+
+#[wasm_bindgen]
+pub fn grayscale(image_buffer: Vec<u8>) -> Vec<u8> {
+  let image = to_image(image_buffer);
+  let image = image.grayscale();
+
+  to_buffer(image)
 }
 
 #[cfg(test)]
