@@ -1,7 +1,7 @@
 // @generated file from wasmbuild -- do not edit
 // deno-lint-ignore-file
 // deno-fmt-ignore-file
-// source-hash: 5621a7c909d6b2533a002e5682a4b8af59d5d9b1
+// source-hash: 252a4770df8dbf6091bcc9b008769df0017d4c6b
 let wasm;
 
 const cachedTextDecoder = new TextDecoder("utf-8", {
@@ -63,6 +63,27 @@ export function grayscale(image_buffer) {
   }
 }
 
+/**
+ * @param {Uint8Array} image_buffer
+ * @param {number} sigma
+ * @returns {Uint8Array}
+ */
+export function blur(image_buffer, sigma) {
+  try {
+    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+    const ptr0 = passArray8ToWasm0(image_buffer, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.blur(retptr, ptr0, len0, sigma);
+    var r0 = getInt32Memory0()[retptr / 4 + 0];
+    var r1 = getInt32Memory0()[retptr / 4 + 1];
+    var v1 = getArrayU8FromWasm0(r0, r1).slice();
+    wasm.__wbindgen_free(r0, r1 * 1);
+    return v1;
+  } finally {
+    wasm.__wbindgen_add_to_stack_pointer(16);
+  }
+}
+
 const imports = {
   __wbindgen_placeholder__: {
     __wbindgen_throw: function (arg0, arg1) {
@@ -99,7 +120,7 @@ let lastLoadPromise;
  * @param {decompressCallback=} transform
  * @returns {Promise<{
  *   instance: WebAssembly.Instance;
- *   exports: { grayscale: typeof grayscale }
+ *   exports: { grayscale: typeof grayscale; blur: typeof blur }
  * }>}
  */
 export function instantiateWithInstance(transform) {
@@ -127,7 +148,7 @@ export function instantiateWithInstance(transform) {
 }
 
 function getWasmInstanceExports() {
-  return { grayscale };
+  return { grayscale, blur };
 }
 
 /** Gets if the Wasm module has been instantiated. */

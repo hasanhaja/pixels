@@ -32,6 +32,15 @@ pub fn grayscale(image_buffer: Vec<u8>) -> Vec<u8> {
   to_buffer(image)
 }
 
+#[wasm_bindgen]
+pub fn blur(image_buffer: Vec<u8>, sigma: f32) -> Vec<u8> {
+  let image = to_image(image_buffer);
+
+  let image = image.blur(sigma);
+
+  to_buffer(image)
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
