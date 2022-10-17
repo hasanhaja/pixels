@@ -9,15 +9,21 @@ router.get("/", (ctx) => {
   ctx.response.body = { message: "Welcome to Pixels"};
 });
 
-const files = (dir: string): Array<string> => {
-  const contents = Deno.readDirSync(`./pixels-api/${dir}`);
+const files = async (dir: string): Promise<Array<string>> => {
+  const contents = [];
 
-  return [...contents].filter(content => content.isFile).map(content => content.name);
+  for await (const content of Deno.readDir(`./pixels-api/${dir}`)) {
+    if (content.isFile) {
+      contents.push(content.name);
+    }
+  }
+
+  return contents;
 }
 
 router.get("/blur/:imageName", async (ctx) => {
   const imageName = ctx.params.imageName;
-  if (files("assets").includes(imageName)) {
+  if ((await files("assets")).includes(imageName)) {
     try {
       const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
       const blurImage = blur(file, 25.0);
@@ -32,7 +38,7 @@ router.get("/blur/:imageName", async (ctx) => {
 
 router.get("/gray/:imageName", async (ctx) => {
   const imageName = ctx.params.imageName;
-  if (files("assets").includes(imageName)) {
+  if ((await files("assets")).includes(imageName)) {
     try {
       const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
       const grayImage = grayscale(file);
