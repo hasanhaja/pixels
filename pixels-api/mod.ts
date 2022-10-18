@@ -20,50 +20,32 @@ const files = async (dir: string): Promise<Array<string>> => {
 
   return contents;
 }
-
-router.get("/blur/:imageName", async (ctx) => {
-  const imageName = ctx.params.imageName;
+const processImage = async (ctx: any, imageName: string, handler: (file: Uint8Array) => Uint8Array) => {
   if ((await files("assets")).includes(imageName)) {
     try {
       const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
-      const blurImage = blur(file, 2.5);
-      ctx.response.body = blurImage;
+      const image = handler(file);
+      ctx.response.body = image;
     } catch (_err) {
       ctx.response.body = { message: `Could not read file: ${imageName}`};
     }
   } else {
     ctx.response.body = { message: `${imageName} not found`};
   }
+}
+router.get("/blur/:imageName", async (ctx) => {
+  const imageName = ctx.params.imageName;
+  await processImage(ctx, imageName, (file) => blur(file, 2.5));
 });
 
 router.get("/blurunscaled/:imageName", async (ctx) => {
   const imageName = ctx.params.imageName;
-  if ((await files("assets")).includes(imageName)) {
-    try {
-      const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
-      const blurImage = blur_unscaled(file, 25.0);
-      ctx.response.body = blurImage;
-    } catch (_err) {
-      ctx.response.body = { message: `Could not read file: ${imageName}`};
-    }
-  } else {
-    ctx.response.body = { message: `${imageName} not found`};
-  }
+  await processImage(ctx, imageName, (file) => blur_unscaled(file, 25.0));
 });
 
 router.get("/gray/:imageName", async (ctx) => {
   const imageName = ctx.params.imageName;
-  if ((await files("assets")).includes(imageName)) {
-    try {
-      const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
-      const grayImage = grayscale(file);
-      ctx.response.body = grayImage;
-    } catch (_err) {
-      ctx.response.body = { message: `Could not read file: ${imageName}`};
-    }
-  } else {
-    ctx.response.body = { message: `${imageName} not found`};
-  }
+  await processImage(ctx, imageName, (file) => grayscale(file));
 });
 
 const app = new Application();
