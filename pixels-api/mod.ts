@@ -2,7 +2,7 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 
 import { instantiate } from "../pixels-engine/lib/rs_lib.generated.js";
 
-const { grayscale, blur } = await instantiate();
+const { grayscale, blur, blur_unscaled } = await instantiate();
 
 const router = new Router();
 router.get("/", (ctx) => {
@@ -26,7 +26,22 @@ router.get("/blur/:imageName", async (ctx) => {
   if ((await files("assets")).includes(imageName)) {
     try {
       const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
-      const blurImage = blur(file, 25.0);
+      const blurImage = blur(file, 2.5);
+      ctx.response.body = blurImage;
+    } catch (_err) {
+      ctx.response.body = { message: `Could not read file: ${imageName}`};
+    }
+  } else {
+    ctx.response.body = { message: `${imageName} not found`};
+  }
+});
+
+router.get("/blurunscaled/:imageName", async (ctx) => {
+  const imageName = ctx.params.imageName;
+  if ((await files("assets")).includes(imageName)) {
+    try {
+      const file = await Deno.readFile(`./pixels-api/assets/${imageName}`);
+      const blurImage = blur_unscaled(file, 25.0);
       ctx.response.body = blurImage;
     } catch (_err) {
       ctx.response.body = { message: `Could not read file: ${imageName}`};

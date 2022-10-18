@@ -1,7 +1,7 @@
 // @generated file from wasmbuild -- do not edit
 // deno-lint-ignore-file
 // deno-fmt-ignore-file
-// source-hash: 21261a1618159de3ec8addd61ded3da02422e8c3
+// source-hash: 58fb0524d499671b4efa42b3f3cb564922edaa09
 let wasm;
 
 const cachedTextDecoder = new TextDecoder("utf-8", {
@@ -53,6 +53,27 @@ export function grayscale(image_buffer) {
     const ptr0 = passArray8ToWasm0(image_buffer, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     wasm.grayscale(retptr, ptr0, len0);
+    var r0 = getInt32Memory0()[retptr / 4 + 0];
+    var r1 = getInt32Memory0()[retptr / 4 + 1];
+    var v1 = getArrayU8FromWasm0(r0, r1).slice();
+    wasm.__wbindgen_free(r0, r1 * 1);
+    return v1;
+  } finally {
+    wasm.__wbindgen_add_to_stack_pointer(16);
+  }
+}
+
+/**
+ * @param {Uint8Array} image_buffer
+ * @param {number} sigma
+ * @returns {Uint8Array}
+ */
+export function blur_unscaled(image_buffer, sigma) {
+  try {
+    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+    const ptr0 = passArray8ToWasm0(image_buffer, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.blur_unscaled(retptr, ptr0, len0, sigma);
     var r0 = getInt32Memory0()[retptr / 4 + 0];
     var r1 = getInt32Memory0()[retptr / 4 + 1];
     var v1 = getArrayU8FromWasm0(r0, r1).slice();
@@ -120,7 +141,7 @@ let lastLoadPromise;
  * @param {decompressCallback=} transform
  * @returns {Promise<{
  *   instance: WebAssembly.Instance;
- *   exports: { grayscale: typeof grayscale; blur: typeof blur }
+ *   exports: { grayscale: typeof grayscale; blur_unscaled: typeof blur_unscaled; blur: typeof blur }
  * }>}
  */
 export function instantiateWithInstance(transform) {
@@ -148,7 +169,7 @@ export function instantiateWithInstance(transform) {
 }
 
 function getWasmInstanceExports() {
-  return { grayscale, blur };
+  return { grayscale, blur_unscaled, blur };
 }
 
 /** Gets if the Wasm module has been instantiated. */
